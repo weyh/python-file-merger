@@ -46,6 +46,7 @@ class File:
 
 def create_output_file(file_path: str, files: List[File]):
     shebang = ""
+    inline_import: List[str] = []
     imports: Set[str] = set()
     lines: List[str] = []
 
@@ -60,7 +61,10 @@ def create_output_file(file_path: str, files: List[File]):
     # get imports
     for file in files:
         for imp in file.imports:
-            if not any([file.get_file_name() in imp for file in files]):
+            if any([file.get_file_name() in imp for file in files]):
+                if imp.startswith("import"):
+                    inline_import.append(file.get_file_name())
+            else:
                 imports.add(imp)
 
     # get program lines
@@ -68,7 +72,14 @@ def create_output_file(file_path: str, files: List[File]):
         lines.append(f"\n# {file.file_path}")
 
         for line in file.prog_lines:
-            lines.append(line)
+            found = False
+            for ii in inline_import:
+                if f"{ii}." in line:
+                    lines.append(line.replace(f"{ii}.", ""))
+                    found = True
+
+            if not found:
+                lines.append(line)
 
     with open(file_path, "w") as f:
         if shebang != "":
