@@ -1,5 +1,5 @@
-import sys
 import argparse
+import sys
 from datetime import datetime
 from typing import List, Set, Tuple
 
@@ -69,7 +69,7 @@ def create_output_file(file_path: str, files: List[File]):
 
     # get program lines
     for file in files:
-        lines.append(f"\n# {file.file_path}")
+        lines.append(f"\n# {file.file_path}\n")
 
         for line in file.prog_lines:
             found = False
